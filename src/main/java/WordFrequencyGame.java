@@ -4,59 +4,41 @@ import java.util.*;
  * Created by jxzhong on 2018/5/22.
  */
 public class WordFrequencyGame {
-    public String getResult(String inputStr) {
 
-        if (inputStr.split("\\s+").length == 1) {
-            return inputStr + " 1";
-        } else {
+    List<Input> inputList = new ArrayList<>();
+    Map<String, Input> inputMap = new HashMap<>();
 
-            try {
+    private String[] formatInputStr(String inputStr){
+        return inputStr.split("\\s+");
+    }
 
-                //split the input string with 1 to n pieces of spaces
-                String[] arr = inputStr.split("\\s+");
-
-                List<Input> inputList = new ArrayList<>();
-                for (String s : arr) {
-                    Input input = new Input(s, 1);
-                    inputList.add(input);
-                }
-
-                //get the map for the next step of sizing the same word
-                Map<String, List<Input>> map = getListMap(inputList);
-
-                List<Input> list = new ArrayList<>();
-                for (Map.Entry<String, List<Input>> entry : map.entrySet()) {
-                    Input input = new Input(entry.getKey(), entry.getValue().size());
-                    list.add(input);
-                }
-                inputList = list;
-
-                inputList.sort((w1, w2) -> w2.getWordCount() - w1.getWordCount());
-
-                StringJoiner joiner = new StringJoiner("\n");
-                for (Input w : inputList) {
-                    String s = w.getValue() + " " + w.getWordCount();
-                    joiner.add(s);
-                }
-                return joiner.toString();
-            } catch (Exception e) {
-                return "Calculate Error";
+    private void getInputMap(String inputStr) {
+        String[] formatStr = formatInputStr(inputStr);
+        for (String s : formatStr) {
+            if(inputMap.containsKey(s)){
+                inputMap.put(s, new Input(s, inputMap.get(s).getWordCount()+1));
+            }else {
+                inputMap.put(s, new Input(s, 1));
             }
         }
     }
 
-    private Map<String, List<Input>> getListMap(List<Input> inputList) {
-        Map<String, List<Input>> map = new HashMap<>();
-        for (Input input : inputList) {
-//       map.computeIfAbsent(input.getValue(), k -> new ArrayList<>()).add(input);
-            if (!map.containsKey(input.getValue())) {
-                ArrayList arr = new ArrayList<>();
-                arr.add(input);
-                map.put(input.getValue(), arr);
-            } else {
-                map.get(input.getValue()).add(input);
-            }
+    private void sortList() {
+        for(Map.Entry<String, Input> entry: inputMap.entrySet() ) {
+            inputList.add(entry.getValue());
         }
-        return map;
+        inputList.sort((w1, w2) -> w2.getWordCount() - w1.getWordCount());
+    }
+
+    public String getResult(String inputStr) {
+        getInputMap(inputStr);
+        sortList();
+
+        StringJoiner joiner = new StringJoiner("\n");
+        for (Input w : inputList) {
+            String s = w.getValue() + " " + w.getWordCount();
+            joiner.add(s);
+        }
+        return joiner.toString();
     }
 }
