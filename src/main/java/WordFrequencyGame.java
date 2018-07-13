@@ -10,39 +10,48 @@ public class WordFrequencyGame {
             return inputStr + " 1";
         } else {
 
-            try {
+            //split the input string with 1 to n pieces of spaces
+            List<Input> inputList = getInputList(inputStr);
 
-                //split the input string with 1 to n pieces of spaces
-                String[] arr = inputStr.split("\\s+");
+            //get the map for the next step of sizing the same word
+            Map<String, List<Input>> map = getListMap(inputList);
 
-                List<Input> inputList = new ArrayList<>();
-                for (String s : arr) {
-                    Input input = new Input(s, 1);
-                    inputList.add(input);
-                }
+            List<Word> resultList = getWords(map);
 
-                //get the map for the next step of sizing the same word
-                Map<String, List<Input>> map = getListMap(inputList);
+            return getString(resultList);
 
-                List<Input> list = new ArrayList<>();
-                for (Map.Entry<String, List<Input>> entry : map.entrySet()) {
-                    Input input = new Input(entry.getKey(), entry.getValue().size());
-                    list.add(input);
-                }
-                inputList = list;
-
-                inputList.sort((w1, w2) -> w2.getWordCount() - w1.getWordCount());
-
-                StringJoiner joiner = new StringJoiner("\n");
-                for (Input w : inputList) {
-                    String s = w.getValue() + " " + w.getWordCount();
-                    joiner.add(s);
-                }
-                return joiner.toString();
-            } catch (Exception e) {
-                return "Calculate Error";
-            }
         }
+    }
+
+    private String getString(List<Word> resultList) {
+        StringJoiner joiner = new StringJoiner("\n");
+        for (Word w : resultList) {
+            String s = w.getValue() + " " + w.getWordCount();
+            joiner.add(s);
+        }
+        return joiner.toString();
+    }
+
+    private List<Word> getWords(Map<String, List<Input>> map) {
+        List<Word> resultList = new ArrayList<>();
+        for (Map.Entry<String, List<Input>> entry : map.entrySet()) {
+            Word input = new Word(entry.getKey(), entry.getValue().size());
+            resultList.add(input);
+        }
+
+        resultList.sort((w1, w2) -> w2.getWordCount() - w1.getWordCount());
+        return resultList;
+    }
+
+    private List<Input> getInputList(String inputStr) {
+        String[] arr = inputStr.split("\\s+");
+
+        List<Input> inputList = new ArrayList<>();
+        for (String s : arr) {
+            Input input = new Input(s);
+            inputList.add(input);
+        }
+        return inputList;
     }
 
     private Map<String, List<Input>> getListMap(List<Input> inputList) {
